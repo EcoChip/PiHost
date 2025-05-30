@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Servicios PiHost - Dani</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 700px;
+      margin: 20px auto;
+      padding: 0 20px;
+      background: #f5f5f5;
+      color: #333;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #0055aa;
+    }
+    section {
+      background: #fff;
+      padding: 15px 20px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    select, input[type=number], input[type=text], input[type=email] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      box-sizing: border-box;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 20px;
+      background-color: #0055aa;
+      color: white;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      font-size: 1.1em;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #003d75;
+    }
+    .price-info {
+      margin-top: 5px;
+      font-style: italic;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <h1>Servicios con Raspberry Pi 5</h1>
+
+  <section>
+    <h2>1) Servidor de Juegos (Minecraft)</h2>
+    <p>
+      Montamos un servidor privado de Minecraft para ti y tus amigos.  
+      Puedes elegir cuántos jugadores podrán jugar simultáneamente.  
+      Cobro mensual según el número de jugadores activos.
+    </p>
+  </section>
+
+  <section>
+    <h2>2) Hosting web para sitios pequeños</h2>
+    <p>
+      Ofrecemos hosting web fiable para páginas personales, blogs o pequeñas empresas.  
+      El precio depende del espacio de almacenamiento y ancho de banda que necesites.
+    </p>
+  </section>
+
+  <section>
+    <h2>Solicita tu servicio</h2>
+    <form id="serviceForm" method="POST" action="https://formspree.io/f/xjkrbral">
+      <label for="name">Nombre completo:</label>
+      <input type="text" id="name" name="Nombre" required />
+
+      <label for="email">Correo electrónico:</label>
+      <input type="email" id="email" name="Correo" required />
+
+      <label for="service">Elige el servicio:</label>
+      <select id="service" name="Servicio" required>
+        <option value="" disabled selected>-- Selecciona un servicio --</option>
+        <option value="Servidor Minecraft">Servidor de Juegos (Minecraft)</option>
+        <option value="Hosting Web">Hosting web para sitios pequeños</option>
+      </select>
+
+      <div id="minecraftOptions" style="display:none;">
+        <label for="players">Número de jugadores simultáneos:</label>
+        <input type="number" id="players" name="Jugadores" min="1" max="50" value="5" />
+        <p class="price-info">Precio aproximado: 3 € / jugador al mes</p>
+      </div>
+
+      <div id="hostingOptions" style="display:none;">
+        <label for="storage">Espacio de almacenamiento (GB):</label>
+        <input type="number" id="storage" name="Almacenamiento" min="1" max="50" value="5" />
+        <p class="price-info">Precio aproximado: 5 € / GB al mes</p>
+      </div>
+
+      <button type="submit">Enviar solicitud</button>
+    </form>
+  </section>
+
+  <script>
+    const serviceSelect = document.getElementById('service');
+    const minecraftOptions = document.getElementById('minecraftOptions');
+    const hostingOptions = document.getElementById('hostingOptions');
+
+    serviceSelect.addEventListener('change', () => {
+      if (serviceSelect.value === 'Servidor Minecraft') {
+        minecraftOptions.style.display = 'block';
+        hostingOptions.style.display = 'none';
+        document.getElementById('players').required = true;
+        document.getElementById('storage').required = false;
+      } else if (serviceSelect.value === 'Hosting Web') {
+        minecraftOptions.style.display = 'none';
+        hostingOptions.style.display = 'block';
+        document.getElementById('players').required = false;
+        document.getElementById('storage').required = true;
+      } else {
+        minecraftOptions.style.display = 'none';
+        hostingOptions.style.display = 'none';
+        document.getElementById('players').required = false;
+        document.getElementById('storage').required = false;
+      }
+    });
+  </script>
+</body>
+</html>
