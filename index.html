@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Servicios PiHost - Dani</title>
+  <title>Servicios PiHost - Raspberry Pi 5</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -29,13 +29,19 @@
       margin-top: 15px;
       font-weight: bold;
     }
-    select, input[type=number], input[type=text], input[type=email] {
+    select, input[type=number], input[type=text], input[type=email], textarea {
       width: 100%;
       padding: 8px;
       margin-top: 5px;
       box-sizing: border-box;
       border-radius: 4px;
       border: 1px solid #ccc;
+      font-family: inherit;
+      font-size: 1em;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 80px;
     }
     button {
       margin-top: 20px;
@@ -49,7 +55,11 @@
       cursor: pointer;
       transition: background-color 0.3s ease;
     }
-    button:hover {
+    button:disabled {
+      background-color: #99b9e0;
+      cursor: not-allowed;
+    }
+    button:hover:not(:disabled) {
       background-color: #003d75;
     }
     .price-info {
@@ -57,18 +67,37 @@
       font-style: italic;
       color: #555;
     }
+    #confirmationMessage {
+      display: none;
+      margin-top: 15px;
+      padding: 15px;
+      background-color: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+      border-radius: 6px;
+      text-align: center;
+      font-weight: bold;
+    }
+    footer {
+      text-align: center;
+      font-size: 0.9em;
+      color: #666;
+      margin-top: 30px;
+      user-select: none;
+    }
   </style>
 </head>
 <body>
   <h1>Servicios PiHost</h1>
 
   <section>
-    <h2>1) Servidor de Juegos </h2>
+    <h2>1) Servidor de Juegos</h2>
     <p>
       Montamos un servidor privado para ti y tus amigos.  
       Puedes elegir cuántos jugadores podrán jugar simultáneamente.  
       Cobro mensual según el número de jugadores activos.
     </p>
+    <p><em>Este servicio está alimentado por energía solar y es ecológico, cuidando el planeta mientras disfrutas.</em></p>
   </section>
 
   <section>
@@ -77,11 +106,12 @@
       Ofrecemos hosting web fiable para páginas personales, blogs o pequeñas empresas.  
       El precio depende del espacio de almacenamiento y ancho de banda que necesites.
     </p>
+    <p><em>Funciona con energía 100% renovable, impulsado por Raspberry Pi 5 y energía solar.</em></p>
   </section>
 
   <section>
     <h2>Solicita tu servicio</h2>
-    <form id="serviceForm" method="POST" action="https://formspree.io/f/xjkrbral">
+    <form id="serviceForm" method="POST" action="https://formspree.io/f/mgebpkwq">
       <label for="name">Nombre completo:</label>
       <input type="text" id="name" name="Nombre" required />
 
@@ -91,33 +121,44 @@
       <label for="service">Elige el servicio:</label>
       <select id="service" name="Servicio" required>
         <option value="" disabled selected>-- Selecciona un servicio --</option>
-        <option value="Servidor Minecraft">Servidor de Juegos </option>
+        <option value="Servidor de Juegos">Servidor de Juegos</option>
         <option value="Hosting Web">Hosting web para sitios pequeños</option>
       </select>
 
       <div id="minecraftOptions" style="display:none;">
         <label for="players">Número de jugadores simultáneos:</label>
         <input type="number" id="players" name="Jugadores" min="1" max="50" value="5" />
-        <p class="price-info">Precio aproximado: 3 € / jugador al mes</p>
+        <p class="price-info">Precio aproximado: 5 € / jugador al mes</p>
       </div>
 
       <div id="hostingOptions" style="display:none;">
         <label for="storage">Espacio de almacenamiento (GB):</label>
         <input type="number" id="storage" name="Almacenamiento" min="1" max="50" value="5" />
-        <p class="price-info">Precio aproximado: 5 € / GB al mes</p>
+        <p class="price-info">Precio aproximado: 3 € / GB al mes</p>
       </div>
+
+      <label for="details">Cuéntanos más sobre lo que quieres (opcional):</label>
+      <textarea id="details" name="Detalles" placeholder="Por ejemplo, requisitos especiales, horarios, etc."></textarea>
 
       <button type="submit">Enviar solicitud</button>
     </form>
+    <div id="confirmationMessage">¡Gracias por tu solicitud! Te responderemos pronto.</div>
   </section>
+
+  <footer>
+    Servicios impulsados por Raspberry Pi 5 y energía solar para un futuro más sostenible.
+  </footer>
 
   <script>
     const serviceSelect = document.getElementById('service');
     const minecraftOptions = document.getElementById('minecraftOptions');
     const hostingOptions = document.getElementById('hostingOptions');
+    const form = document.getElementById('serviceForm');
+    const confirmationMessage = document.getElementById('confirmationMessage');
+    const submitButton = form.querySelector('button[type="submit"]');
 
     serviceSelect.addEventListener('change', () => {
-      if (serviceSelect.value === 'Servidor Minecraft') {
+      if (serviceSelect.value === 'Servidor de Juegos') {
         minecraftOptions.style.display = 'block';
         hostingOptions.style.display = 'none';
         document.getElementById('players').required = true;
@@ -133,6 +174,35 @@
         document.getElementById('players').required = false;
         document.getElementById('storage').required = false;
       }
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      submitButton.disabled = true;
+      confirmationMessage.style.display = 'none';
+
+      const formData = new FormData(form);
+      try {
+        const response = await fetch(form.action, {
+          method: form.method,
+          body: formData,
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          confirmationMessage.style.display = 'block';
+          form.reset();
+          minecraftOptions.style.display = 'none';
+          hostingOptions.style.display = 'none';
+        } else {
+          alert('Hubo un problema enviando el formulario. Intenta de nuevo.');
+        }
+      } catch (error) {
+        alert('Error de red. Intenta más tarde.');
+      }
+      submitButton.disabled = false;
     });
   </script>
 </body>
